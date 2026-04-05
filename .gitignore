@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+coverage/
+
+# Default local state is under ./agent-data (workspace, logs, chat-history, reminders.json).
+agent-data/
+# Legacy paths if you override DEEPCLAW_WORKSPACE / DEEPCLAW_LOG_FILE to repo-root dirs.
+workspace/
+logs/

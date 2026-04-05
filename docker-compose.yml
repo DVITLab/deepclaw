@@ -1,0 +1,43 @@
+services:
+  deepclaw:
+    build:
+      context: .
+      secrets:
+        - hf_token
+    env_file:
+      - .env
+    # Default 0 = full tools; set DEEPCLAW_SAFE_MODE=1 or true in .env for read_file-only safe profile.
+    environment:
+      DEEPCLAW_SAFE_MODE: ${DEEPCLAW_SAFE_MODE:-0}
+    restart: unless-stopped
+    # Host ports are uncommon to reduce clashes with local dev; container ports stay standard for tools.
+    ports:
+      - "31300:3000"
+      - "35173:5173"
+      - "34173:4173"
+      - "38080:8080"
+      - "38000:8000"
+      - "35000:5000"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:7587/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    volumes:
+      # Default: workspace, logs, chat-history, reminders.json under /app/agent-data (see DEEPCLAW_DATA_DIR).
+      # Remove this line if you want a fresh container every recreate.
+      - ./agent-data:/app/agent-data
+    # Optional: cap CPU/RAM so the bot does not peg the host (helps laptops). Uncomment and tune.
+    # Recent Docker Compose + Docker Desktop often honor deploy.limits for `compose up`; if ignored, use
+    # Docker Desktop → Settings → Resources (CPUs / Memory) instead.
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: "2.0"
+    #       memory: 4G
+
+# Build-only: pass host HF_TOKEN into the image build for authenticated Hugging Face Hub (faster-whisper model warm). Set in `.env` (see `.env.example`); empty HF_TOKEN= is valid (anonymous download).
+secrets:
+  hf_token:
+    environment: HF_TOKEN

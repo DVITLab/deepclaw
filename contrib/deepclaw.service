@@ -1,0 +1,18 @@
+[Unit]
+Description=Deepclaw Telegram agent (Docker Compose)
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/deepclaw
+# Clone the repo here with docker-compose.yml and .env; adjust paths if needed.
+ExecStart=/usr/bin/docker compose up
+ExecStop=/usr/bin/docker compose down
+TimeoutStopSec=120
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
